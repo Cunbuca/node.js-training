@@ -1,11 +1,27 @@
 import {fastify} from "fastify"
+import {DatabaseMemory} from "./database-memory.js"
 
-const Server = fastify();
+const server = fastify();
 
-Server.get("/", () =>{
-    return "ola mundo";
+const database = new DatabaseMemory();
+
+server.get("/user", () => {
+    const user = database.list()
+
+    return user
 });
 
-Server.listen({
+server.post("/user", (request, reply) =>{
+    const {username, useremail} = request.body;
+
+    database.create({
+        username,
+        useremail,
+    });
+
+    return reply.status(201).send();
+});
+
+server.listen({
     port: 3000,
 });
